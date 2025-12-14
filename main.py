@@ -2,7 +2,7 @@ from crypto.wallet import Wallet
 from core.state import State
 from core.blockchain import Blockchain
 from compiler.solidity_compiler import compile_contract
-from evm.deploy import deploy_contract, execute_contract
+from evm.deploy import deploy_contract
 from agents.ai_agent import AIAgent
 
 state = State()
