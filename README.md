@@ -81,3 +81,5 @@ This demo deploys a toy contract (`x = x + 1`), executes it via an agent, mines 
 - Replace in-memory state with a persistent key-value store and snapshots.
 
 ---
+## License
+MIT License
