@@ -10,10 +10,21 @@ class Node:
         self.sock.listen()
 
     def start(self):
-        threading.Thread(target=self.accept).start()
+        # Start accept loop in a daemon thread and return the Thread for testing
+        t = threading.Thread(target=self.accept, daemon=True)
+        t.start()
+        return t
 
     def accept(self):
         while True:
-            conn, _ = self.sock.accept()
-            data = conn.recv(4096)
-            print("Received:", json.loads(data))
+            try:
+                conn, _ = self.sock.accept()
+                data = conn.recv(4096)
+                # Attempt to decode JSON; if invalid, report and continue
+                try:
+                    print("Received:", json.loads(data))
+                except json.JSONDecodeError:
+                    print("Received invalid JSON")
+            except OSError:
+                # Socket closed or other I/O error; exit loop cleanly
+                break

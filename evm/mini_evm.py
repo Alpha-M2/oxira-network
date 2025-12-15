@@ -12,16 +12,36 @@ class MiniEVM:
         self.gas -= 1
 
         if op == "PUSH":
+            if self.pc >= len(self.code):
+                raise IndexError("PUSH missing immediate operand")
             self.stack.append(self.code[self.pc])
             self.pc += 1
         elif op == "ADD":
-            self.stack.append(self.stack.pop() + self.stack.pop())
+            # ensure there are at least two items
+            if len(self.stack) < 2:
+                raise IndexError("stack underflow on ADD")
+            a = self.stack.pop()
+            b = self.stack.pop()
+            self.stack.append(a + b)
         elif op == "STORE":
-            self.storage[self.stack.pop()] = self.stack.pop()
+            if self.pc >= len(self.code):
+                raise IndexError("STORE missing key operand")
+            key = self.code[self.pc]
+            self.pc += 1
+            if len(self.stack) < 1:
+                raise IndexError("stack underflow on STORE")
+            val = self.stack.pop()
+            self.storage[key] = val
         elif op == "LOAD":
-            self.stack.append(self.storage.get(self.stack.pop(), 0))
+            if self.pc >= len(self.code):
+                raise IndexError("LOAD missing key operand")
+            key = self.code[self.pc]
+            self.pc += 1
+            self.stack.append(self.storage.get(key, 0))
         elif op == "STOP":
             return False
+        else:
+            raise ValueError(f"unknown opcode: {op}")
         return True
 
     def run(self):
